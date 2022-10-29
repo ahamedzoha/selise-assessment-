@@ -9,19 +9,10 @@ const Navbar = () => {
       name: "Home",
       active: location.pathname === "/",
     },
-    {
-      to: "/about",
-      name: "About",
-      active: location.pathname === "/about",
-    },
-    {
-      to: "/contact",
-      name: "Contact",
-      active: location.pathname === "/contact",
-    },
   ]
   return (
-    <nav className="bg-slate-700 px-2 py-4 text-white text-lg">
+    <nav className="flex justify-between bg-slate-700 px-2 py-4 text-white text-lg">
+      <span>Bookmark Manager</span>
       <ul className="flex  space-x-3">
         {links.map((link) => (
           <li key={link.to}>

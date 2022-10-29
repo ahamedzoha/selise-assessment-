@@ -6,7 +6,9 @@ import { BrowserRouter } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 
-import { AuthProvider } from "./Contexts/AuthContext"
+import { ModalProvider } from "./Contexts/AddModalContext"
+import { CategoriesProvider } from "./Contexts/CategoryContext"
+import { BookmarksProvider } from "./Contexts/BookMarkContext"
 
 const queryClient = new QueryClient()
 
@@ -14,9 +16,13 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <AuthProvider>
-          <App />
-        </AuthProvider>
+        <CategoriesProvider>
+          <BookmarksProvider>
+            <ModalProvider>
+              <App />
+            </ModalProvider>
+          </BookmarksProvider>
+        </CategoriesProvider>
       </BrowserRouter>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
