@@ -1,12 +1,14 @@
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { fetchUsers } from "../../API/fetch20user"
-// import items from "../../Utils/dummy"
 import { useModal } from "../../Contexts/AddModalContext"
 import AddModal from "../../Global/Modal/AddModal"
+import { useCategories } from "../../Contexts/CategoryContext"
+import { useBookmarks } from "../../Contexts/BookMarkContext"
 
 const Home = () => {
   const { openModal } = useModal()
+  const { categories } = useCategories()
+  const { bookmarks } = useBookmarks()
   return (
     <div className="mt-4 flex items-center flex-col">
       <button
@@ -19,9 +21,18 @@ const Home = () => {
       <div className="w-full m-4 grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3 space-x-2 space-y-2">
         {/* Category Card */}
 
-        <CategoryCard categoryName="Javascript">
+        {/* <CategoryCard categoryName="Javascript">
           <CardItem />
-        </CategoryCard>
+        </CategoryCard> */}
+        {categories.map((category) => (
+          <CategoryCard key={category.id} categoryName={category.name}>
+            {bookmarks
+              .filter((bookmark) => bookmark.category === category.id)
+              .map((bookmark) => (
+                <CardItem key={bookmark.id} item={bookmark.title} />
+              ))}
+          </CategoryCard>
+        ))}
       </div>
       <AddModal />
     </div>
