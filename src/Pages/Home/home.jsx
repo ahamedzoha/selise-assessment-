@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { useQuery } from "@tanstack/react-query"
 import { useModal } from "../../Contexts/AddModalContext"
 import AddModal from "../../Global/Modal/AddModal"
 import { useCategories } from "../../Contexts/CategoryContext"
@@ -19,11 +18,6 @@ const Home = () => {
       </button>
       {/* Category Cards container */}
       <div className="w-full m-4 grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3 space-x-2 space-y-2">
-        {/* Category Card */}
-
-        {/* <CategoryCard categoryName="Javascript">
-          <CardItem />
-        </CategoryCard> */}
         {categories.map((category) => (
           <CategoryCard key={category.id} categoryName={category.name}>
             {bookmarks
@@ -51,7 +45,7 @@ const CategoryCard = ({ categoryName, children }) => {
   )
 }
 
-const CardItem = ({ title, categoryName, url }) => {
+const CardItem = ({ title, url }) => {
   return (
     <div className="flex justify-between pr-2 bg-gray-200 rounded-lg p-2">
       <span>{title}</span>

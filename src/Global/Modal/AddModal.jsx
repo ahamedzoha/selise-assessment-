@@ -16,7 +16,7 @@ const AddModal = () => {
       id: "",
       title: "",
       url: "",
-      category: "",
+      category: categories[0],
     },
     onSubmit: (values) => {
       if (createCategory) {
@@ -77,7 +77,7 @@ const AddModal = () => {
                 <button
                   type="button"
                   onClick={() => {
-                    addCategory({ id: uuidv4(), name: values.category })
+                    addCategory({ id: uuidv4(), name: values.id })
                     setCreateCategory(false)
                   }}
                   className="bg-green-300 px-2 py-1 text-sm rounded-lg"
