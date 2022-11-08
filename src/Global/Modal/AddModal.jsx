@@ -5,28 +5,49 @@ import { useFormik } from "formik"
 import { useBookmarks } from "../../Contexts/BookMarkContext"
 import { useCategories } from "../../Contexts/CategoryContext"
 import { v4 as uuidv4 } from "uuid"
+import * as Yup from "yup"
 
 const AddModal = () => {
   const [createCategory, setCreateCategory] = useState(false)
   const { isModalOpen, closeModal } = useModal()
   const { addBookmark } = useBookmarks()
   const { addCategory, categories } = useCategories()
-  const { values, handleChange, handleSubmit, resetForm } = useFormik({
+
+  const { values, handleChange, handleSubmit, resetForm, errors } = useFormik({
     initialValues: {
       id: "",
       title: "",
       url: "",
-      category: categories[0],
+      category: categories[0]?.id,
     },
+    validationSchema: Yup.object({
+      title: Yup.string()
+        .max(30, "Must be 30 characters or less")
+        .required("Title is required"),
+      url: Yup.string()
+        .matches(
+          /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/,
+          "Enter correct url! (inlcude http:// or https://)"
+        )
+        .required("Please enter website"),
+      category: Yup.string().required("Category is required"),
+    }),
     onSubmit: (values) => {
       if (createCategory) {
         addCategory({ id: uuidv4(), name: values.category })
+        setCreateCategory(false)
       }
       addBookmark({ ...values, id: uuidv4() })
       closeModal()
-      resetForm()
+      resetForm({
+        values: {
+          category: categories[0]?.id,
+        },
+      })
     },
   })
+
+  // console.log(errors)
 
   return (
     <Dialog open={isModalOpen} onClose={() => closeModal()}>
@@ -50,6 +71,9 @@ const AddModal = () => {
               value={values.title}
               className="border border-gray-300 rounded-md p-2"
             />
+            {errors.title && (
+              <span className="text-red-500 text-sm">{errors.title}</span>
+            )}
 
             <label htmlFor="url">URL</label>
             <input
@@ -60,6 +84,9 @@ const AddModal = () => {
               value={values.url}
               className="border border-gray-300 rounded-md p-2"
             />
+            {errors.url && (
+              <span className="text-red-500 text-sm">{errors.url}</span>
+            )}
 
             {createCategory ? (
               <div className="flex items-end justify-between">
@@ -77,7 +104,7 @@ const AddModal = () => {
                 <button
                   type="button"
                   onClick={() => {
-                    addCategory({ id: uuidv4(), name: values.id })
+                    addCategory({ id: uuidv4(), name: values.category })
                     setCreateCategory(false)
                   }}
                   className="bg-green-300 px-2 py-1 text-sm rounded-lg"
@@ -94,7 +121,7 @@ const AddModal = () => {
                     id="category"
                     onChange={handleChange}
                     value={values.category}
-                    selected
+                    // selected={categories[0]?.id}
                     className="border border-gray-300 rounded-md p-2"
                   >
                     {categories.map((category) => (

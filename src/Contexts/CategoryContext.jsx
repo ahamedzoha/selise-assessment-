@@ -4,11 +4,7 @@ const CategoriesContext = createContext()
 
 export const CategoriesProvider = ({ children }) => {
   const [categories, setCategories] = useState(
-    JSON.parse(localStorage.getItem("categories")) || [
-      { id: 1, name: "React" },
-      { id: 2, name: "Vue" },
-      { id: 3, name: "Angular" },
-    ]
+    JSON.parse(localStorage.getItem("categories")) || []
   )
 
   const addCategory = (category) => {
