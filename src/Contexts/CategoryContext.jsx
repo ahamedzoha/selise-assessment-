@@ -1,4 +1,4 @@
-import { useContext, createContext, useState } from "react"
+import { useContext, createContext, useState, useEffect } from "react"
 
 const CategoriesContext = createContext()
 
@@ -6,6 +6,10 @@ export const CategoriesProvider = ({ children }) => {
   const [categories, setCategories] = useState(
     JSON.parse(localStorage.getItem("categories")) || []
   )
+
+  useEffect(() => {
+    setCategories(JSON.parse(localStorage.getItem("categories")) || [])
+  }, [])
 
   const addCategory = (category) => {
     setCategories([...categories, category])

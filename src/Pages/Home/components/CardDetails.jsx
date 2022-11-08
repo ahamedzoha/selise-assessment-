@@ -1,7 +1,9 @@
 import { useCategories } from "../../../Contexts/CategoryContext"
+import { useBookmarks } from "../../../Contexts/BookMarkContext"
 
 const CardDetails = ({ bookmark }) => {
   const { categories } = useCategories()
+  const { bookmarks } = useBookmarks()
 
   const category = categories.find(
     (category) =>
@@ -39,11 +41,11 @@ const CardDetails = ({ bookmark }) => {
         <span className="font-bold">Category:</span> {category?.name}
       </p>
     </div>
-  ) : (
+  ) : bookmarks?.length > 0 || categories.length > 0 ? (
     <div className="bg-white rounded-lg shadow-lg p-4">
       <h2 className="text-md font-bold">None Selected</h2>
     </div>
-  )
+  ) : null
 }
 
 export default CardDetails

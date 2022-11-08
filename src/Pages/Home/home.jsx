@@ -16,7 +16,7 @@ const Home = () => {
 
   const handleSelect = (bookmark) => {
     setSelectedBookmark(bookmark)
-    console.log(bookmark)
+    // console.log(bookmark)
   }
 
   return (

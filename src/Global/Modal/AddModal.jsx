@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Dialog } from "@headlessui/react"
 import { useModal } from "../../Contexts/AddModalContext"
-import { useFormik } from "formik"
+import { useFormik, Form, Field } from "formik"
 import { useBookmarks } from "../../Contexts/BookMarkContext"
 import { useCategories } from "../../Contexts/CategoryContext"
 import { v4 as uuidv4 } from "uuid"
@@ -13,12 +13,19 @@ const AddModal = () => {
   const { addBookmark } = useBookmarks()
   const { addCategory, categories } = useCategories()
 
-  const { values, handleChange, handleSubmit, resetForm, errors } = useFormik({
+  const {
+    values,
+    handleChange,
+    handleSubmit,
+    resetForm,
+    errors,
+    setFieldValue,
+  } = useFormik({
     initialValues: {
       id: "",
       title: "",
       url: "",
-      category: categories[0]?.id,
+      category: categories[0]?.name,
     },
     validationSchema: Yup.object({
       title: Yup.string()
@@ -32,21 +39,26 @@ const AddModal = () => {
         .required("Please enter website"),
       category: Yup.string().required("Category is required"),
     }),
+
     onSubmit: (values) => {
       if (createCategory) {
         addCategory({ id: uuidv4(), name: values.category })
         setCreateCategory(false)
+        addBookmark({ ...values, id: uuidv4() })
+      } else {
+        addBookmark({ ...values, id: uuidv4() })
       }
-      addBookmark({ ...values, id: uuidv4() })
+
       closeModal()
       resetForm({
         values: {
-          category: categories[0]?.id,
+          category: categories[0]?.name,
         },
       })
     },
   })
 
+  // console.log(categories)
   // console.log(errors)
 
   return (
@@ -61,7 +73,11 @@ const AddModal = () => {
           <Dialog.Title className="font-bold mb-4">Add Bookmak</Dialog.Title>
           <Dialog.Description>{/* Form */}</Dialog.Description>
 
-          <form onSubmit={handleSubmit} className="flex flex-col space-y-2">
+          <form
+            onSubmit={handleSubmit}
+            onChange={handleChange}
+            className="flex flex-col space-y-2"
+          >
             <label htmlFor="title">Title</label>
             <input
               type="text"
@@ -89,63 +105,85 @@ const AddModal = () => {
             )}
 
             {createCategory ? (
-              <div className="flex items-end justify-between">
-                <div className="flex flex-col items-start">
-                  <label htmlFor="category">Category</label>
-                  <input
-                    type="text"
-                    name="category"
-                    id="category"
-                    onChange={handleChange}
-                    value={values.category}
-                    className="border border-gray-300 rounded-md p-2"
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    addCategory({ id: uuidv4(), name: values.category })
-                    setCreateCategory(false)
-                  }}
-                  className="bg-green-300 px-2 py-1 text-sm rounded-lg"
-                >
-                  Add Category +
-                </button>
-              </div>
-            ) : (
-              <div className="flex items-center justify-between ">
-                <div className="flex flex-col items-start">
-                  <label htmlFor="category">Category</label>
-                  <select
-                    name="category"
-                    id="category"
-                    onChange={handleChange}
-                    value={values.category}
-                    // selected={categories[0]?.id}
-                    className="border border-gray-300 rounded-md p-2"
+              <>
+                <div className="flex items-end justify-between">
+                  <div className="flex flex-col items-start">
+                    <label htmlFor="category">Category</label>
+                    <input
+                      type="text"
+                      name="category"
+                      id="category"
+                      onChange={handleChange}
+                      value={values.category}
+                      className="border border-gray-300 rounded-md p-2"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      addCategory({ id: uuidv4(), name: values.category })
+                      setCreateCategory(false)
+                    }}
+                    className="bg-green-300 px-2 py-1 text-sm rounded-lg"
                   >
-                    {categories.map((category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </select>
+                    Add Category +
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setCreateCategory(true)}
-                  className="bg-green-300 px-2 py-1 text-sm rounded-lg"
-                >
-                  Add Category
-                </button>
-              </div>
+                {errors.category && (
+                  <span className="text-red-500 text-sm">
+                    {errors.category}
+                  </span>
+                )}
+              </>
+            ) : (
+              <>
+                <div className="flex items-center justify-between ">
+                  <div className="flex flex-col items-start">
+                    <label htmlFor="category">Category</label>
+                    <select
+                      name="category"
+                      id="category"
+                      onChange={handleChange}
+                      value={values.category}
+                      className="border border-gray-300 rounded-md p-2"
+                    >
+                      {categories.map((category) => (
+                        <option key={category.id} value={category.id}>
+                          {category.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFieldValue("category", "")
+                      setCreateCategory(true)
+                    }}
+                    className="bg-green-300 px-2 py-1 text-sm rounded-lg"
+                  >
+                    Add Category
+                  </button>
+                </div>
+
+                {errors.category && (
+                  <span className="text-red-500 text-sm">
+                    {errors.category}
+                  </span>
+                )}
+              </>
             )}
 
             <button
               type="submit"
-              className="mt-4 bg-indigo-400 text-white rounded-md p-2"
+              className="mt-4 bg-indigo-400 text-white rounded-md p-2  disabled:bg-slate-500 disabled:cursor-not-allowed"
+              disabled={
+                typeof values.category === "undefined" ||
+                values.category === "" ||
+                Object.keys(errors).length > 0
+              }
             >
-              Add
+              Add Bookmark
             </button>
           </form>
           <button
